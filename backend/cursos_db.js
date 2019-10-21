@@ -12,42 +12,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-  
 
-//	app.use(express.static('public')); Funciona. Carpeta en la misma que app. Cambiar ruta.
-
-
-function any_error(rout, res){
-	fs.stat(rout, error => {
-		if (!error) {
-		  	fs.readFile(rout, (error,contenido) => {
-			if (error) {
-			  res.writeHead(500, {'Content-Type': 'text/plain'});
-			  res.write('Error interno');
-			  res.end();					
-			} else {
-			  res.writeHead(200, {'Content-Type': 'text/html'});
-			  res.write(contenido);
-			  res.end();
-			}
-		  });
-		} else {
-		  res.writeHead(404, {'Content-Type': 'text/html'});
-		  res.write('<!doctype html><html><head></head><body>Recurso inexistente</body></html>');	
-		  res.end();
-		}
-	});
-}
 
 // default route
 app.get('/', function (req, res) {
-  const objetourl = url.parse(req.url);
-  let camino=objetourl.pathname;
-  if (camino=='/')
-    camino='../frontend/views/index.html';
-  	any_error(camino, res);
+    return res.send({ error: true, message: 'hello' })
 });
-
 
 // connection configurations
 var dbConn = mysql.createConnection({
@@ -62,17 +32,11 @@ dbConn.connect();
 
 // Retrieve all cursos 
 app.get('/programas', function (req, res) {
-  const objetourl = url.parse(req.url);
-  let camino=objetourl.pathname;
-  if (camino=='/programas')
-    camino='../frontend/views/programa.html';
-    any_error(camino, res);
-	
-    /**dbConn.query('SELECT * FROM cursos', function (error, results, fields) {
-        if (error) throw error;
-        res.send(results);
-		console.log(results);
-  	});**/
+  dbConn.query('SELECT * FROM cursos', function (error, results, fields) {
+	if (error) throw error;
+	res.send(results);
+	console.log(results);
+  });
 });
  
  
